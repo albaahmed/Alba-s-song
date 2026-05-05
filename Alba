@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Spotify Minimal Controls</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/ Fondo dinámico /
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  filter: blur(70px) brightness(0.45) saturate(1.4);
+  transform: scale(1.25);
+  z-index: -1;
+}
+
+/* ============================
+   DISEÑO PC
+   ============================ */
+
+.main {
+  width: 100%;
+  height: calc(100% - 140px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.cover {
+  width: 80vw;
+  height: 80vw;
+  max-width: 420px;
+  max-height: 420px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+}
+
+/ Texto móvil oculto en PC /
+.track-info.mobile-only {
+  display: none;
+}
+
+.bottom-bar {
+  height: 140px;
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 25%;
+}
+
+.left img {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.track-artist {
+  font-size: 13px;
+  color: #b3b3b3;
+}
+
+.center {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ctrl-medium svg {
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+}
+
+.ctrl-play {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ctrl-play svg {
+  width: 26px;
+  height: 26px;
+  fill: #000;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 60%;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.progress {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #535353;
+  border-radius: 3px;
+}
+
+.progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #1db954;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+.right {
+  width: 25%;
+}
+
+/* ============================
+   MODO MÓVIL (SPOTIFY)
+   ============================ */
+
+@media (max-width: 600px) {
+
+  .main {
+    height: calc(100vh - 160px);
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .cover {
+    width: 85vw;
+    height: 85vw;
+  }
+
+  / Texto móvil visible solo en móvil /
+  .track-info.mobile-only {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .track-title {
+    font-size: 22px;
+  }
+
+  .track-artist {
+    font-size: 15px;
+  }
+
+  / BARRA FIJA INFERIOR TRANSPARENTE /
+  .mobile-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(20px);
+    padding: 20px 0 25px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 999;
+  }
+
+  .mobile-controls .controls {
+    gap: 40px;
+  }
+
+  .mobile-controls .ctrl-play {
+    width: 70px;
+    height: 70px;
+  }
+
+  .mobile-controls .ctrl-play svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mobile-controls .progress-row {
+    width: 85%;
+    margin-top: 15px;
+  }
+
+  / OCULTAR BARRA DE PC /
+  .bottom-bar {
+    display: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg" id="bg"></div>
+
+<div class="main">
+  <img src="portada.jpg" class="cover" id="cover">
+
+  <!-- TEXTO SOLO PARA MÓVIL -->
+  <div class="track-info mobile-only">
+    <div class="track-title" id="title"></div>
+    <div class="track-artist" id="artist"></div>
+  </div>
+</div>
+
+<!-- BARRA PC -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="left">
+    <img src="portada.jpg" id="miniCover">
+    <div class="track-info">
+      <div class="track-title" id="titlePC"></div>
+      <div class="track-artist" id="artistPC"></div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="controls">
+      <button class="ctrl-medium"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+      <button class="ctrl-play" id="play"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="ctrl-medium"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button>
+    </div>
+
+    <div class="progress-row">
+      <span id="current">0:00</span>
+      <input type="range" id="progress" class="progress" min="0" max="100" value="0">
+      <span id="duration">0:00</span>
+    </div>
+  </div>
+
+  <div class="right"></div>
+</div>
+
+<!-- BARRA MÓVIL FIJA -->
+<div class="mobile-controls">
+  <div class="controls">
+    <button class="ctrl-medium"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+    <button class="ctrl-play" id="playMobile"><svg id="playIconMobile" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="ctrl-medium"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button>
+  </div>
+
+  <div class="progress-row">
+    <span id="currentMobile">0:00</span>
+    <input type="range" id="progressMobile" class="progress" min="0" max="100" value="0">
+    <span id="durationMobile">0:00</span>
+  </div>
+</div>
+
+<audio id="audio" src="tu-cancion.mp3"></audio>
+
+<script>
+const audio = document.getElementById("audio");
+
+const playBtn = document.getElementById("play");
+const playBtnMobile = document.getElementById("playMobile");
+
+const playIcon = document.getElementById("playIcon");
+const playIconMobile = document.getElementById("playIconMobile");
+
+const progress = document.getElementById("progress");
+const progressMobile = document.getElementById("progressMobile");
+
+const current = document.getElementById("current");
+const currentMobile = document.getElementById("currentMobile");
+
+const duration = document.getElementById("duration");
+const durationMobile = document.getElementById("durationMobile");
+
+const bg = document.getElementById("bg");
+const cover = document.getElementById("cover");
+const miniCover = document.getElementById("miniCover");
+
+const titleMobile = document.getElementById("title");
+const artistMobile = document.getElementById("artist");
+
+const titlePC = document.getElementById("titlePC");
+const artistPC = document.getElementById("artistPC");
+
+let playing = false;
+
+function togglePlay() {
+  if (playing) {
+    audio.pause();
+    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    playIconMobile.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  } else {
+    audio.play();
+    playIcon.innerHTML = '<path d="M6 19h4V5H6zm8-14h4v14h-4z"/>';
+    playIconMobile.innerHTML = '<path d="M6 19h4V5H6zm8-14h4v14h-4z"/>';
+  }
+  playing = !playing;
+}
+
+playBtn.addEventListener("click", togglePlay);
+playBtnMobile.addEventListener("click", togglePlay);
+
+audio.addEventListener("loadedmetadata", () => {
+  duration.textContent = format(audio.duration);
+  durationMobile.textContent = format(audio.duration);
+
+  titleMobile.textContent = "Tu Canción";
+  artistMobile.textContent = "Tu Nombre";
+
+  titlePC.textContent = "Tu Canción";
+  artistPC.textContent = "Tu Nombre";
+});
+
+audio.addEventListener("timeupdate", () => {
+  const value = (audio.currentTime / audio.duration) * 100;
+  progress.value = value;
+  progressMobile.value = value;
+
+  current.textContent = format(audio.currentTime);
+  currentMobile.textContent = format(audio.currentTime);
+});
+
+progress.addEventListener("input", () => {
+  audio.currentTime = (progress.value / 100) * audio.duration;
+});
+
+progressMobile.addEventListener("input", () => {
+  audio.currentTime = (progressMobile.value / 100) * audio.duration;
+});
+
+function format(sec) {
+  if (isNaN(sec)) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return ${m}:${s.toString().padStart(2, "0")};
+}
+
+function aplicarFondo() {
+  bg.style.backgroundImage = url('${cover.src}');
+  miniCover.src = cover.src;
+}
+
+if (cover.complete) aplicarFondo();
+cover.onload = aplicarFondo;
+</script>
+
+</body>
+</html>
